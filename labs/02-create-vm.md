@@ -24,56 +24,85 @@ Fill in these settings:
 
 | Setting | Value |
 |---------|-------|
-| **Subscription** | (your subscription) |
+| **Subscription** | `Azure subscription 1` |
 | **Resource group** | `workshop-students-rg` |
 | **Virtual machine name** | `studentXX-vm` (replace XX with your number) |
-| **Region** | `East US` |
-| **Image** | `Ubuntu Server 24.04 LTS` |
-| **Size** | Click "See all sizes" → Select `B1s` |
+| **Region** | `(US) East US` |
+| **Availability options** | `No infrastructure redundancy required` |
+| **Security type** | `Standard` |
+| **Image** | `Ubuntu Server 24.04 LTS - x64 Gen2` |
+| **VM architecture** | `x64` |
+| **Size** | `Standard_B1s` (1 vcpu, 1 GiB memory) - $7.59/month |
+
+> 💡 **Tip:** Click "See all sizes" and search for "B1s" if not visible.
 
 **Administrator account:**
+
 | Setting | Value |
 |---------|-------|
 | **Authentication type** | `Password` |
-| **Username** | `azureuser` |
-| **Password** | (create a strong password - save it!) |
+| **Username** | `studentXX` (replace XX with your number) |
+| **Password** | Create a strong password (save it!) |
+| **Confirm password** | Re-enter password |
+
+**Inbound port rules:**
+
+| Setting | Value |
+|---------|-------|
+| **Public inbound ports** | `None` (we use subnet NSG) |
 
 ---
 
-### Step 3: Configure Networking
+### Step 3: Configure Disks
+
+Click the **Disks** tab:
+
+| Setting | Value |
+|---------|-------|
+| **OS disk size** | `Image default (30 GiB)` |
+| **OS disk type** | `Premium SSD (locally-redundant storage)` |
+| **Delete with VM** | ✅ Checked |
+
+---
+
+### Step 4: Configure Networking
 
 Click the **Networking** tab:
 
 | Setting | Value |
 |---------|-------|
-| **Virtual network** | `vnet-mlct-student-eus` |
+| **Virtual network** | `vnet-mlct-student-eus (workshop-students-rg)` |
 | **Subnet** | `snet-vm-student-eus (10.1.1.0/24)` |
-| **Public IP** | `(new)` - keep default |
-| **NIC network security group** | `None` (we use subnet NSG) |
+| **Public IP** | `(new) studentXX-vm-ip` |
+| **NIC network security group** | `None` |
+
+> ℹ️ The subnet already has NSG `nsg-vm-student-eus` attached with SSH, RDP, HTTP, HTTPS rules.
 
 ---
 
-### Step 4: Review and Create
+### Step 5: Review and Create
 
-1. Click **Review + create**
-2. Review your settings
-3. Click **Create**
-4. Wait for deployment (2-3 minutes)
+1. Skip **Management**, **Monitoring**, **Advanced**, **Tags** tabs (use defaults)
+2. Click **Review + create**
+3. Review your settings
+4. Click **Create**
+5. Wait for deployment (2-3 minutes)
 
 ---
 
-### Step 5: Connect to Your VM
+### Step 6: Connect to Your VM
 
 Once deployed:
 
-1. Go to your VM resource
-2. Copy the **Public IP address**
+1. Click **Go to resource**
+2. Copy the **Public IP address** from Overview page
 
 **Option A: Connect via SSH (Linux/Mac/Windows Terminal)**
 
 ```bash
-ssh azureuser@<your-public-ip>
+ssh studentXX@<your-public-ip>
 ```
+
 Enter your password when prompted.
 
 **Option B: Connect via RDP (Windows Remote Desktop)**
@@ -83,7 +112,7 @@ Enter your password when prompted.
 3. Click **Download RDP File**
 4. Open the downloaded `.rdp` file
 5. Enter credentials:
-   - Username: `azureuser`
+   - Username: `studentXX`
    - Password: (your password)
 6. Click **Connect**
 
@@ -91,7 +120,8 @@ Enter your password when prompted.
 
 **You're now inside your VM!** 🎉
 
-Try these commands (in SSH or terminal):
+Try these commands:
+
 ```bash
 # Check hostname
 hostname
@@ -106,7 +136,7 @@ df -h
 
 ---
 
-### Step 6: Clean Up (Important!)
+### Step 7: Clean Up (Important!)
 
 When done, **delete your VM** to avoid charges:
 
@@ -116,7 +146,7 @@ When done, **delete your VM** to avoid charges:
    - ✅ OS disk
    - ✅ Network interfaces  
    - ✅ Public IP address
-4. Type `delete` to confirm
+4. Type the VM name to confirm
 5. Click **Delete**
 
 ---
@@ -125,6 +155,7 @@ When done, **delete your VM** to avoid charges:
 
 - [ ] Created VM in `workshop-students-rg`
 - [ ] Used `vnet-mlct-student-eus` and `snet-vm-student-eus`
+- [ ] Selected `Standard_B1s` size
 - [ ] Connected via SSH or RDP
 - [ ] Deleted the VM when done
 
@@ -142,14 +173,31 @@ When done, **delete your VM** to avoid charges:
 - Check your password
 
 **Permission denied?**
-- Username is `azureuser` (not your email)
+- Username is `studentXX` (not your email)
 - Password is case-sensitive
+
+**VM creation failed?**
+- Check you're in `workshop-students-rg`
+- Check region is `East US`
+- Try a different VM name
 
 ---
 
 ## What You Learned
 
 - How to create a VM using the Azure Portal
-- How VMs connect to Virtual Networks
+- How VMs connect to Virtual Networks and Subnets
 - How to connect via SSH (Linux) or RDP (Windows)
 - Why cleanup is important (cost management)
+
+---
+
+## Cost Information
+
+| Resource | Cost |
+|----------|------|
+| Standard_B1s VM | ~$0.01/hour ($7.59/month) |
+| Premium SSD 30GB | ~$4.80/month |
+| Public IP | ~$3.65/month |
+
+> ⚠️ **Always delete your VM after the lab to avoid charges!**
