@@ -158,7 +158,7 @@ cloudworkshop/
 │   ├── 00-clone-repo.md
 │   ├── 01-azure-login.md
 │   ├── 02-create-vm.md
-│   └── 03-create-app-service.md
+│   
 └── resources/
     ├── cheatsheets/                # Quick reference guides
     ├── images/                     # Workshop images
