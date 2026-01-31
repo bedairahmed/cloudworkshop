@@ -5,7 +5,7 @@
 *.swo
 *.sublime-project
 *.sublime-workspace
-
+PASSWORD
 # OS Files
 .DS_Store
 Thumbs.db
