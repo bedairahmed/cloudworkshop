@@ -1,0 +1,61 @@
+# .dockerignore
+# Files and directories to exclude from Docker build context
+
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules
+vendor
+__pycache__
+*.pyc
+.venv
+venv
+env
+
+# Build outputs
+dist
+build
+*.egg-info
+
+# IDE and editors
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage
+.coverage
+.pytest_cache
+.nyc_output
+
+# Docker
+Dockerfile*
+docker-compose*
+.docker
+
+# Documentation
+README.md
+docs
+*.md
+
+# Misc
+.editorconfig
+.prettierrc
+.eslintrc*
+*.bak
+*.tmp
