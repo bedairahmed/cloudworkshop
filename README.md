@@ -109,43 +109,67 @@ Before starting the workshop, ensure you have:
 
 ---
 
-## 📚 Quick Reference Cheatsheets
+## 📚 Resources
 
-### Cloud & Infrastructure
-- [Azure CLI](resources/cheatsheets/azure-cli.md) — Azure command-line interface
-- [GCP CLI](resources/cheatsheets/gcp-cli.md) — Google Cloud CLI (gcloud)
-- [Terraform](resources/cheatsheets/terraform.md) — Infrastructure as Code
+### 🎓 Training & Certifications
 
-### Containers & Orchestration
-- [Docker](resources/cheatsheets/docker.md) — Container platform
-- [Kubernetes](resources/cheatsheets/kubernetes.md) — Container orchestration
-- [Helm](resources/cheatsheets/helm.md) — Kubernetes package manager
+| Resource | Description |
+|----------|-------------|
+| [Training Resources](resources/training.md) | Free YouTube tutorials, official training platforms (Microsoft Learn, Google Cloud Skills, Linux Foundation, Docker) |
+| [Certifications Guide](resources/certifications.md) | Complete certification roadmap — Azure, GCP, Kubernetes, Docker & AWS — with exam details, costs, career paths, and study tips |
 
-### Development & DevOps
-- [Git](resources/cheatsheets/git.md) — Version control
-- [GitHub](resources/cheatsheets/github.md) — GitHub platform & Actions
-- [Pipelines](resources/cheatsheets/pipelines.md) — CI/CD pipelines
-- [VS Code](resources/cheatsheets/vscode.md) — Code editor & shortcuts
+### 📝 Cheatsheets
 
-### Scripting & Automation
-- [Linux](resources/cheatsheets/linux.md) — Linux commands
-- [PowerShell](resources/cheatsheets/powershell.md) — PowerShell scripting
-- [Python](resources/cheatsheets/python.md) — Python programming
-- [YAML](resources/cheatsheets/yaml.md) — YAML syntax
-- [Ansible](resources/cheatsheets/ansible.md) — Configuration management
+**Cloud & Infrastructure**
 
-### Guides
-- [README Guide](resources/cheatsheets/readme-guide.md) — How to write good README files
+| Cheatsheet | Description |
+|------------|-------------|
+| [Azure CLI](resources/cheatsheets/azure-cli.md) | Azure command-line interface |
+| [GCP CLI](resources/cheatsheets/gcp-cli.md) | Google Cloud CLI (gcloud) |
+| [Terraform](resources/cheatsheets/terraform.md) | Infrastructure as Code |
 
----
+**Containers & Orchestration**
 
-## 📂 Sample Code
+| Cheatsheet | Description |
+|------------|-------------|
+| [Docker](resources/cheatsheets/docker.md) | Container platform |
+| [Kubernetes](resources/cheatsheets/kubernetes.md) | Container orchestration |
+| [Helm](resources/cheatsheets/helm.md) | Kubernetes package manager |
+
+**Development & DevOps**
+
+| Cheatsheet | Description |
+|------------|-------------|
+| [Git](resources/cheatsheets/git.md) | Version control |
+| [GitHub](resources/cheatsheets/github.md) | GitHub platform & Actions |
+| [Pipelines](resources/cheatsheets/pipelines.md) | CI/CD pipelines |
+| [VS Code](resources/cheatsheets/vscode.md) | Code editor & shortcuts |
+
+**Scripting & Automation**
+
+| Cheatsheet | Description |
+|------------|-------------|
+| [Linux](resources/cheatsheets/linux.md) | Linux commands |
+| [PowerShell](resources/cheatsheets/powershell.md) | PowerShell scripting |
+| [Python](resources/cheatsheets/python.md) | Python programming |
+| [YAML](resources/cheatsheets/yaml.md) | YAML syntax |
+| [Ansible](resources/cheatsheets/ansible.md) | Configuration management |
+
+**Guides**
+
+| Guide | Description |
+|-------|-------------|
+| [README Guide](resources/cheatsheets/readme-guide.md) | How to write good README files |
+
+### 💻 Sample Code
 
 Ready-to-use examples for reference and practice:
 
-- [Docker Samples](resources/samples/docker/) — Dockerfiles & Compose examples
-- [Terraform Samples](resources/samples/terraform/) — Azure infrastructure examples
-- [Pipeline Samples](resources/samples/pipelines/) — CI/CD workflow examples
+| Sample | Description |
+|--------|-------------|
+| [Docker Samples](resources/samples/docker/) | Dockerfiles & Compose examples |
+| [Terraform Samples](resources/samples/terraform/) | Azure infrastructure examples |
+| [Pipeline Samples](resources/samples/pipelines/) | CI/CD workflow examples |
 
 ---
 
@@ -154,12 +178,16 @@ Ready-to-use examples for reference and practice:
 ```
 cloudworkshop/
 ├── README.md                       # This file
+├── STUDENT-CREDENTIALS.md          # Student login details (not in repo)
 ├── labs/                           # Hands-on lab exercises
 │   ├── 00-clone-repo.md
 │   ├── 01-azure-login.md
-│   ├── 02-create-vm.md
-│   
+│   └── 02-create-vm.md
+├── scripts/                        # Setup & validation scripts
+│   └── azure-workshop-setup.sh
 └── resources/
+    ├── training.md                 # Training resources & video links
+    ├── certifications.md           # Certification roadmap & guide
     ├── cheatsheets/                # Quick reference guides
     ├── images/                     # Workshop images
     └── samples/                    # Sample code
