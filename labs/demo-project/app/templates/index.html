@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} — {{ environment }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">☁️ {{ app_name }}</div>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/health" target="_blank">Health</a>
+            <a href="/api/info" target="_blank">API</a>
+        </div>
+        <span class="env-badge" style="background: {{ env_color }};">{{ environment }}</span>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Cloud Application Architecture</h1>
+            <p class="hero-subtitle">Foundations Workshop — Madina Lab</p>
+            <div class="hero-version">v{{ version }}</div>
+        </div>
+        <div class="hero-animation">
+            <div class="cloud cloud-1">☁️</div>
+            <div class="cloud cloud-2">☁️</div>
+            <div class="cloud cloud-3">☁️</div>
+        </div>
+    </section>
+
+    <!-- Info Cards -->
+    <section class="cards-section">
+        <div class="cards-grid">
+
+            <!-- Container Info -->
+            <div class="card">
+                <div class="card-icon">🖥️</div>
+                <h3>Container Info</h3>
+                <div class="info-row">
+                    <span class="label">Hostname</span>
+                    <span class="value" id="hostname">{{ hostname }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Environment</span>
+                    <span class="value">
+                        <span class="env-dot" style="background: {{ env_color }};"></span>
+                        {{ environment }}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Version</span>
+                    <span class="value">{{ version }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Time (UTC)</span>
+                    <span class="value" id="server-time">{{ timestamp }}</span>
+                </div>
+            </div>
+
+            <!-- Architecture -->
+            <div class="card">
+                <div class="card-icon">🏗️</div>
+                <h3>Architecture</h3>
+                <div class="arch-diagram">
+                    <div class="arch-layer"><span class="arch-box client">Browser</span></div>
+                    <div class="arch-arrow">↓</div>
+                    <div class="arch-layer"><span class="arch-box server">Flask App</span></div>
+                    <div class="arch-arrow">↓</div>
+                    <div class="arch-layer"><span class="arch-box infra">Docker Container</span></div>
+                    <div class="arch-arrow">↓</div>
+                    <div class="arch-layer"><span class="arch-box cloud">Azure App Service</span></div>
+                </div>
+            </div>
+
+            <!-- API Tester -->
+            <div class="card">
+                <div class="card-icon">📡</div>
+                <h3>API Endpoints</h3>
+                <div class="endpoint" onclick="fetchEndpoint('/health')">
+                    <span class="method get">GET</span>
+                    <span class="path">/health</span>
+                </div>
+                <div class="endpoint" onclick="fetchEndpoint('/api/info')">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/info</span>
+                </div>
+                <div class="endpoint" onclick="fetchEndpoint('/api/env')">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/env</span>
+                </div>
+                <div class="api-response" id="api-response">
+                    <span class="placeholder">Click an endpoint to see the response</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Workshop Topics -->
+    <section class="topics-section">
+        <h2>Day 2 Topics</h2>
+        <div class="topics-grid">
+            <div class="topic">
+                <span class="topic-icon">🐳</span>
+                <h4>Containerization</h4>
+                <p>Docker, images, containers</p>
+            </div>
+            <div class="topic">
+                <span class="topic-icon">🏗️</span>
+                <h4>Infrastructure as Code</h4>
+                <p>Terraform, environments, tfvars</p>
+            </div>
+            <div class="topic">
+                <span class="topic-icon">🔄</span>
+                <h4>CI/CD Pipelines</h4>
+                <p>Azure DevOps, stages, gates</p>
+            </div>
+            <div class="topic">
+                <span class="topic-icon">🌍</span>
+                <h4>Environments</h4>
+                <p>Dev → Staging → Prod</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Made with ❤️ for <strong>Madina Lab</strong></p>
+        <p class="footer-meta">Cloud Application Architecture Foundations Workshop</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

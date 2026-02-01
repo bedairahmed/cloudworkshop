@@ -1,0 +1,234 @@
+# ============================================================
+# Azure DevOps CI/CD Pipeline — Workshop Demo
+# ============================================================
+# Build → Test → Deploy Dev → Deploy Staging → Deploy Prod
+#
+# Agent Pool: Local (self-hosted Linux VM)
+# Service Connections:
+#   - acr-workshop-connection  (Docker Registry)
+#   - sp-terraform-ado         (Azure RM)
+# ============================================================
+
+parameters:
+  - name: environment
+    displayName: 'Deploy to Environment'
+    type: string
+    default: 'dev'
+    values:
+      - dev
+      - staging
+      - prod
+
+  - name: runTests
+    displayName: 'Run Tests?'
+    type: boolean
+    default: true
+
+trigger:
+  branches:
+    include:
+      - master
+      - main
+
+variables:
+  dockerRegistryConnection: 'acr-workshop-connection'
+  azureSubscription: 'sp-terraform-ado'
+  acrName: 'acrworkshopdeveus'
+  imageName: 'workshop-app'
+  terraformVersion: '1.9.0'
+
+  # Secret — add via: Pipeline → Edit → Variables → + (lock 🔒)
+  # Name: dbPassword | Value: MyS3cretP@ss! | Keep secret ✅
+
+# ============================================================
+# STAGE 1: BUILD
+# ============================================================
+stages:
+  - stage: Build
+    displayName: '🔨 Build'
+    jobs:
+      - job: BuildApp
+        pool:
+          name: 'Local'
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "========================================="
+              echo "🔨 Build Summary"
+              echo "========================================="
+              echo "Branch:      $(Build.SourceBranchName)"
+              echo "Build ID:    $(Build.BuildId)"
+              echo "Environment: ${{ parameters.environment }}"
+              echo "Run Tests:   ${{ parameters.runTests }}"
+              echo "-----------------------------------------"
+              echo "🔒 DB Password: $(dbPassword)"
+              echo "   ☝️  Secret is masked as *** in logs!"
+              echo "========================================="
+            displayName: 'Build info & secret demo'
+
+          - task: Docker@2
+            displayName: 'Build & Push to ACR'
+            inputs:
+              containerRegistry: $(dockerRegistryConnection)
+              repository: $(imageName)
+              command: 'buildAndPush'
+              Dockerfile: 'app/Dockerfile'
+              buildContext: 'app'
+              tags: |
+                $(Build.BuildId)
+                latest
+
+# ============================================================
+# STAGE 2: TEST
+# ============================================================
+  - stage: Test
+    displayName: '🧪 Test'
+    dependsOn: Build
+    condition: eq('${{ parameters.runTests }}', true)
+    jobs:
+      - job: AppTests
+        displayName: 'Run App Tests'
+        pool:
+          name: 'Local'
+        steps:
+          - checkout: self
+          - script: |
+              python3 -m pip install -r app/requirements.txt pytest
+              cd app
+              python3 -m pytest tests/ -v
+            displayName: 'pytest'
+
+      - job: TerraformValidate
+        displayName: 'Validate Terraform'
+        pool:
+          name: 'Local'
+        steps:
+          - checkout: self
+          - script: |
+              cd terraform
+              terraform init -backend=false
+              terraform validate
+              terraform fmt -check -recursive
+              echo "✅ Terraform valid & formatted"
+            displayName: 'Validate & fmt check'
+          - script: |
+              echo "📋 Environment Configs Comparison:"
+              echo ""
+              echo "=== DEV ==="
+              cat terraform/envs/dev.tfvars
+              echo ""
+              echo "=== STAGING ==="
+              cat terraform/envs/staging.tfvars
+              echo ""
+              echo "=== PROD ==="
+              cat terraform/envs/prod.tfvars
+            displayName: 'Show env configs'
+
+# ============================================================
+# STAGE 3: DEPLOY DEV
+# ============================================================
+  - stage: DeployDev
+    displayName: '🚀 Deploy Dev'
+    dependsOn: Test
+    condition: in('${{ parameters.environment }}', 'dev', 'staging', 'prod')
+    jobs:
+      - deployment: DeployDev
+        pool:
+          name: 'Local'
+        environment: 'workshop-dev'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: AzureCLI@2
+                  displayName: 'Terraform Plan (Dev)'
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      cd terraform
+                      terraform init \
+                        -backend-config="resource_group_name=terraform-rg" \
+                        -backend-config="storage_account_name=tfstatemlcloudworkshp" \
+                        -backend-config="container_name=tfstate" \
+                        -backend-config="key=dev.tfstate"
+                      terraform plan -var-file=envs/dev.tfvars -var="app_version=$(Build.BuildId)"
+                      echo "========================================="
+                      echo "✅ Dev — Plan complete"
+                      echo "🌐 Resources: RG, ACR, App Service (F1)"
+                      echo "========================================="
+
+# ============================================================
+# STAGE 4: DEPLOY STAGING
+# ============================================================
+  - stage: DeployStaging
+    displayName: '🎭 Deploy Staging'
+    dependsOn: DeployDev
+    condition: in('${{ parameters.environment }}', 'staging', 'prod')
+    jobs:
+      - deployment: DeployStaging
+        pool:
+          name: 'Local'
+        environment: 'workshop-staging'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: AzureCLI@2
+                  displayName: 'Terraform Plan (Staging)'
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      cd terraform
+                      terraform init \
+                        -backend-config="resource_group_name=terraform-rg" \
+                        -backend-config="storage_account_name=tfstatemlcloudworkshp" \
+                        -backend-config="container_name=tfstate" \
+                        -backend-config="key=staging.tfstate"
+                      terraform plan -var-file=envs/staging.tfvars -var="app_version=$(Build.BuildId)"
+                      echo "========================================="
+                      echo "✅ Staging — Plan complete"
+                      echo "🌐 Resources: RG, ACR, App Service (B1)"
+                      echo "========================================="
+
+# ============================================================
+# STAGE 5: DEPLOY PROD — ⚠️ Manual Approval
+# ============================================================
+  - stage: DeployProd
+    displayName: '🏭 Deploy Prod'
+    dependsOn: DeployStaging
+    condition: eq('${{ parameters.environment }}', 'prod')
+    jobs:
+      - deployment: DeployProd
+        pool:
+          name: 'Local'
+        environment: 'workshop-prod'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: AzureCLI@2
+                  displayName: 'Terraform Plan (Prod)'
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      cd terraform
+                      terraform init \
+                        -backend-config="resource_group_name=terraform-rg" \
+                        -backend-config="storage_account_name=tfstatemlcloudworkshp" \
+                        -backend-config="container_name=tfstate" \
+                        -backend-config="key=prod.tfstate"
+                      terraform plan -var-file=envs/prod.tfvars -var="app_version=$(Build.BuildId)"
+                      echo "========================================="
+                      echo "✅ PROD — Plan complete"
+                      echo "🌐 Resources: RG, ACR, App Service (S1)"
+                      echo "========================================="
